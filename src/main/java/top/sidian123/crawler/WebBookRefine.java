@@ -17,20 +17,52 @@ public class WebBookRefine {
      * @param dest 目的文件名
      */
     static public void refine(String origin,String dest,String prefix) throws IOException {
+        filter(origin,dest,
+                str ->
+                        Pattern.matches(".*"+prefix+"\\s+第\\d+章.*",str)
+                                ?str.replace(prefix,"").trim()+"\n"
+                                :str+"\n"
+        );
+    }
+
+    /**
+     * 去掉一行
+     * @param origin
+     * @param dest
+     * @param regex
+     */
+    static public void removeLine(String origin,String dest,String regex) throws IOException {
+        filter(origin,dest,str -> Pattern.matches(regex,str)?"":str+"\n");
+    }
+
+
+    /**
+     * 过滤处理文件
+     * @param origin 源文件名
+     * @param dest 目标文件名
+     * @param handler 处理每一个行字符串的回调函数
+     */
+    static public void filter(String origin,String dest,ReadLineCallback handler) throws IOException {
         BufferedReader reader=new BufferedReader(new FileReader(origin, Charset.forName("utf-8")));
         BufferedWriter writer=new BufferedWriter(new FileWriter(dest,Charset.forName("utf-8")));
 
         String str=null;
         while((str=reader.readLine())!=null){
-            if(Pattern.matches(".*"+prefix+"\\s+第\\d+章.*",str)){//是章节标题
-                str=str.replace(prefix,"").trim();
-                writer.write(str+"\n");
-            }else{
-                writer.write(str+"\n");
-            }
+            str=handler.handle(str);
+            writer.write(str);
         }
         reader.close();
         writer.close();
     }
+
+    static public interface ReadLineCallback{
+        /**
+         * 处理每一行字符串的回调函数
+         * @param str
+         * @return
+         */
+        String handle(String str);
+    }
+
 
 }

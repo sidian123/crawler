@@ -66,4 +66,15 @@ public class WebBookHelper {
         );
         crawler.crawl(0);
     }
+
+    public static void 道士不好惹() throws IOException, InterruptedException {
+        WebBookCrawler crawler=new WebBookCrawler(
+                "https://www.77xs.co/book_91594/32190601.html",
+                "#box_con > div.bookname > h1",
+                "#content",
+                "#box_con > div.bottem > a:nth-child(4)",
+                "道士不好惹.txt"
+        );
+        crawler.crawl(0);
+    }
 }
